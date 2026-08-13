@@ -6,11 +6,33 @@ Designed to mirror the core meeting-assistant user workflows of [Fireflies.ai](h
 
 ---
 
-## 🚀 Deployed App & Resources
+## 🌐 Live Production Deployment & Architecture
 
-- **Live Application:** *(Placeholder — Add deployed Vercel/Render link here)*
-- **Interactive API Documentation:** `http://localhost:8000/docs` (Swagger UI)
-- **Demo Video Walkthrough:** *(Placeholder — Add YouTube/Loom link here)*
+- **Live Frontend Application (Vercel):** `https://meeting-intelligence-platform.vercel.app` *(Placeholder — replace with live Vercel URL)*
+- **Live Backend API (Render):** `https://meeting-intelligence-platform.onrender.com/api/v1` *(Placeholder — replace with live Render URL)*
+- **Interactive OpenAPI Documentation:** `https://meeting-intelligence-platform.onrender.com/docs` (Swagger UI)
+
+### 🏗️ Production Infrastructure Design
+
+```
+┌─────────────────────────┐               ┌─────────────────────────────────────────┐
+│     Frontend Web        │               │           Backend Web Service           │
+│    Vercel Edge Network  │ ────────────> │                 Render                  │
+│    (Next.js 14 App Router)              │      (FastAPI + Uvicorn ASGI Server)     │
+└─────────────────────────┘               └────────────────────┬────────────────────┘
+                                                               │
+                                                               ▼
+                                                  ┌─────────────────────────┐
+                                                  │     Persistent Disk     │
+                                                  │       Mounted @ /data   │
+                                                  │     (SQLite /data/app.db)│
+                                                  └─────────────────────────┘
+```
+
+#### Why SQLite with Persistent Disk on Render?
+SQLite with a Render persistent disk (`mountPath: /data`, `sqlite:////data/app.db`) was selected over hosted PostgreSQL for this single-tenant architecture. This guarantees zero external database connection latency, zero third-party database costs, and persistent data survival across server restarts without complex ORM driver shifts. For multi-region horizontal scaling, swapping `DATABASE_URL` to a hosted PostgreSQL cluster is supported out-of-the-box via SQLAlchemy.
+
+> ℹ️ **Render Free Tier Cold Starts:** If the backend has been idle, Render automatically spins down free instances. Initial requests may take 30–60 seconds while the web service boots. Subsequent requests will execute instantly.
 
 ---
 

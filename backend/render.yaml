@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: meeting-intelligence-backend
+    env: python
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: alembic upgrade head && python app/db/seed.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    disk:
+      name: sqlite-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:////data/app.db
+      - key: CORS_ORIGINS
+        value: http://localhost:3000
+      - key: LLM_API_KEY
+        value: ""
