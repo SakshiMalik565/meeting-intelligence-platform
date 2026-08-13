@@ -70,6 +70,18 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode — connects to the DB and applies changes."""
+    # Ensure SQLite parent directory exists before connecting
+    db_url = config.get_main_option("sqlalchemy.url")
+    if db_url and db_url.startswith("sqlite"):
+        db_path = db_url.replace("sqlite:///", "").replace("sqlite://", "")
+        if db_path and db_path != ":memory:":
+            parent_dir = os.path.dirname(os.path.abspath(db_path))
+            if parent_dir and not os.path.exists(parent_dir):
+                try:
+                    os.makedirs(parent_dir, exist_ok=True)
+                except Exception:
+                    pass
+
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
