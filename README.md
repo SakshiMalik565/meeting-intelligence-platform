@@ -8,9 +8,9 @@ Designed to mirror the core meeting-assistant user workflows of [Fireflies.ai](h
 
 ## 🌐 Live Production Deployment & Architecture
 
-- **Live Frontend Application (Vercel):** `https://meeting-intelligence-platform.vercel.app` *(Placeholder — replace with live Vercel URL)*
-- **Live Backend API (Render):** `https://meeting-intelligence-platform.onrender.com/api/v1` *(Placeholder — replace with live Render URL)*
-- **Interactive OpenAPI Documentation:** `https://meeting-intelligence-platform.onrender.com/docs` (Swagger UI)
+- **Live Frontend Application (Vercel):** `https://meeting-intelligence-platform.vercel.app` *(Pending Vercel step)*
+- **Live Backend API (Render):** `https://meeting-intelligence-platform-7d59.onrender.com/api/v1`
+- **Interactive OpenAPI Documentation:** `https://meeting-intelligence-platform-7d59.onrender.com/docs` (Swagger UI)
 
 ### 🏗️ Production Infrastructure Design
 
