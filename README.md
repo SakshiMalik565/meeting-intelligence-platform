@@ -52,7 +52,7 @@ graph TD
 
 ## 🗄️ Database Schema & Entity Relationships
 
-The backend uses a fully normalized 8-table relational database design:
+The backend uses a fully normalized 10-table relational database schema (managed via Alembic migrations):
 
 ```mermaid
 erDiagram
@@ -63,6 +63,8 @@ erDiagram
     MEETINGS ||--o| SUMMARIES : generates
     MEETINGS ||--o{ KEY_TOPICS : contains
     MEETINGS ||--o{ ACTION_ITEMS : assigns
+    MEETINGS ||--o{ MEETING_TAGS : tagged
+    TAGS ||--o{ MEETING_TAGS : categorizes
 
     USERS {
         uuid id PK
@@ -117,6 +119,16 @@ erDiagram
         string assignee_name
         boolean is_completed
         datetime created_at
+    }
+
+    TAGS {
+        uuid id PK
+        string name
+    }
+
+    MEETING_TAGS {
+        uuid meeting_id PK_FK
+        uuid tag_id PK_FK
     }
 ```
 
@@ -267,10 +279,14 @@ Follow these step-by-step commands to run both backend and frontend locally from
 
 1. **Transcript Upload Formats:** The backend transcript parser assumes WebVTT files include speaker voice tags (`<v Speaker Name>`) or standard timestamps (`00:00:10.000 --> 00:00:15.000`). Plain text files format turns as `Speaker Name [00:00:10]: text`.
 2. **Duration Units:** The API stores meeting duration in `duration_seconds`. The frontend creation modal accepts minutes for user convenience and converts to seconds before dispatching multipart payload.
-3. **Bonus Feature Prioritization:** High-impact utility features (**Global `Cmd+K` Command Palette Search** and **Client-side `.txt`/`.md` Export Utilities**) were prioritized over decorative features to deliver immediate evaluative value.
+3. **Bonus Feature Tradeoffs:**
+   - **Prioritized Features:** High-impact utilities (**Global `Cmd+K` Command Palette Search** with direct timestamp audio seeking and **Client-side `.txt`/`.md` Report Exports**) were fully implemented.
+   - **Skipped Features (Documented Tradeoff):** Tag UI management (adding/filtering tag pills on cards) and interactive LLM meeting chatbot were deferred. The underlying database models (`tags` and `meeting_tags`) remain active in the 10-table schema to support tag categorization in future iterations.
 
 ---
 
-## 📄 License & Assignment Notice
+## 📌 Known Limitations & Future Roadmap
 
-Built for technical evaluation. All code is original, modular, and fully documented.
+- **Tag Management UI:** The database contains `tags` and `meeting_tags` tables, but tag editing controls on the meeting form are deferred.
+- **Single-Tenant Session:** User authentication is currently bound to the seeded identity (`Sakshi Malik`). Multi-tenant OAuth2 (Google/Microsoft SSO) is planned for future releases.
+- **Interactive Chatbot:** "Ask a question about this meeting" LLM chatbot assistant is deferred in favor of direct global keyword search.
