@@ -4,10 +4,12 @@ services:
     env: python
     region: oregon
     buildCommand: pip install -r requirements.txt
-    startCommand: alembic upgrade head && python app/db/seed.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    startCommand: export PYTHONPATH=. && alembic upgrade head && python app/db/seed.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
+      - key: PYTHONPATH
+        value: .
       - key: DATABASE_URL
         value: sqlite:///./app.db
       - key: CORS_ORIGINS

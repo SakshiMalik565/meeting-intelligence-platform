@@ -5,10 +5,14 @@ It connects to the database using the same settings as the FastAPI app
 and registers all SQLAlchemy models for autogenerate support.
 """
 
+import sys
+import os
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, pool
+# Ensure app package is in Python search path
+sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), "..")))
 
+from sqlalchemy import engine_from_config, pool
 from alembic import context
 
 # Import our app's Base and settings so Alembic uses the same DB config
