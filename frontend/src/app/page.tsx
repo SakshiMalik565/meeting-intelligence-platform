@@ -26,11 +26,13 @@ import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Modal } from "@/components/ui/Modal";
+import { NewMeetingModal } from "@/components/modal/NewMeetingModal";
 
 export default function MeetingsDashboard() {
   const queryClient = useQueryClient();
 
   // ── States ──────────────────────────────────────────────────────────
+  const [isNewMeetingModalOpen, setIsNewMeetingModalOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [debouncedSearch, setDebouncedSearch] = React.useState("");
   const [participant, setParticipant] = React.useState("");
@@ -149,7 +151,7 @@ export default function MeetingsDashboard() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout onNewMeetingClick={() => setIsNewMeetingModalOpen(true)}>
       {/* Filters Bar Area */}
       <section className="bg-brand-surface border border-brand-border rounded-xl p-4 mb-6 shadow-sm">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
@@ -460,6 +462,11 @@ export default function MeetingsDashboard() {
           Are you sure you want to delete this meeting transcript? This action is permanent and will cascade-delete the transcript segments, key topics, summaries, and action items associated with it.
         </p>
       </Modal>
+      {/* New Meeting Creation Modal */}
+      <NewMeetingModal
+        isOpen={isNewMeetingModalOpen}
+        onClose={() => setIsNewMeetingModalOpen(false)}
+      />
     </DashboardLayout>
   );
 }

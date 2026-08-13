@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { NewMeetingModal } from "@/components/modal/NewMeetingModal";
 
 export default function MeetingDetailPage() {
   const params = useParams();
@@ -35,6 +36,7 @@ export default function MeetingDetailPage() {
   const meetingId = params?.id as string;
 
   // Modals state
+  const [isNewMeetingModalOpen, setIsNewMeetingModalOpen] = React.useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [editModalOpen, setEditModalOpen] = React.useState(false);
   const [kebabOpen, setKebabOpen] = React.useState(false);
@@ -145,7 +147,7 @@ export default function MeetingDetailPage() {
   const minutes = Math.round(meeting.duration_seconds / 60);
 
   return (
-    <DashboardLayout>
+    <DashboardLayout onNewMeetingClick={() => setIsNewMeetingModalOpen(true)}>
       <div className="space-y-6">
         {/* Top Breadcrumb & Metadata Header */}
         <div className="space-y-3 border-b border-brand-border pb-4">
@@ -312,6 +314,11 @@ export default function MeetingDetailPage() {
           Are you sure you want to delete &quot;{meeting.title}&quot;? This action cannot be undone and will delete all associated transcript segments, summaries, and action items.
         </p>
       </Modal>
+      {/* New Meeting Creation Modal */}
+      <NewMeetingModal
+        isOpen={isNewMeetingModalOpen}
+        onClose={() => setIsNewMeetingModalOpen(false)}
+      />
     </DashboardLayout>
   );
 }
