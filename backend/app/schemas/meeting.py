@@ -95,6 +95,16 @@ class PaginatedMeetingsResponse(BaseModel):
     total_pages: int
 
 
+# ── Mutation request schemas ───────────────────────────────────────
+
+
+class MeetingUpdateRequest(BaseModel):
+    """Body for PATCH /meetings/{id}. Only title and participants are editable."""
+
+    title: str | None = None
+    participant_names: list[str] | None = None
+
+
 # ── Meeting detail response (full, with all nested data) ──────────────
 
 
