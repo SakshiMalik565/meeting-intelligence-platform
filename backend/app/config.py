@@ -23,7 +23,7 @@ class Settings(BaseSettings):
 
     @property
     def resolved_database_url(self) -> str:
-        """Resolve SQLite path to an absolute path and ensure directory exists."""
+        """Resolve SQLite path to an absolute path and ensure directory exists with /tmp fallback."""
         url = self.DATABASE_URL
         if url.startswith("sqlite"):
             if url.startswith("sqlite:////"):
@@ -37,7 +37,13 @@ class Settings(BaseSettings):
                 abs_path = os.path.abspath(path)
                 parent_dir = os.path.dirname(abs_path)
                 if parent_dir:
-                    os.makedirs(parent_dir, exist_ok=True)
+                    try:
+                        os.makedirs(parent_dir, exist_ok=True)
+                    except (PermissionError, OSError):
+                        # Fallback to /tmp if parent directory (like /data) is forbidden/read-only
+                        tmp_path = os.path.join("/tmp", os.path.basename(abs_path))
+                        os.makedirs("/tmp", exist_ok=True)
+                        return f"sqlite:///{tmp_path}"
                 return f"sqlite:///{abs_path}"
         return url
 
