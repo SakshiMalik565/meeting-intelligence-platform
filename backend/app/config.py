@@ -10,8 +10,8 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Central app settings — maps to environment variables."""
 
-    # SQLite for local dev; swap to postgres:// for production
-    DATABASE_URL: str = "sqlite:///./fireflies.db"
+    # SQLite for local dev and Linux containers (/tmp/fireflies.db)
+    DATABASE_URL: str = "sqlite:////tmp/fireflies.db"
 
     # Optional LLM key for real summary generation.
     # Empty string triggers the deterministic mock fallback.
