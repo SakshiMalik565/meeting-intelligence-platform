@@ -29,10 +29,10 @@ Designed to mirror the core meeting-assistant user workflows of [Fireflies.ai](h
                                                   └─────────────────────────┘
 ```
 
-#### Why SQLite with Persistent Disk on Render?
-SQLite with a Render persistent disk (`mountPath: /data`, `sqlite:////data/app.db`) was selected over hosted PostgreSQL for this single-tenant architecture. This guarantees zero external database connection latency, zero third-party database costs, and persistent data survival across server restarts without complex ORM driver shifts. For multi-region horizontal scaling, swapping `DATABASE_URL` to a hosted PostgreSQL cluster is supported out-of-the-box via SQLAlchemy.
+#### Render Free Tier SQLite Architecture
+Render Free Tier instances run on ephemeral container filesystems where persistent disk attachments require paid tiers. To support 100% free-tier deployment, the application uses local SQLite (`DATABASE_URL=sqlite:///./app.db`). On server boot, the start command automatically runs `alembic upgrade head && python app/db/seed.py`, ensuring all 8 seeded meetings, multi-speaker transcripts, summaries, and action items are automatically instantiated on startup!
 
-> ℹ️ **Render Free Tier Cold Starts:** If the backend has been idle, Render automatically spins down free instances. Initial requests may take 30–60 seconds while the web service boots. Subsequent requests will execute instantly.
+> ℹ️ **Render Free Tier Cold Starts:** Render automatically spins down free instances after inactivity. Initial requests may take 30–60 seconds while the web service boots and seeds. Subsequent requests will execute instantly.
 
 ---
 
