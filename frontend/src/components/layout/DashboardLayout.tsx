@@ -17,6 +17,7 @@ import {
 import { api } from "@/lib/api";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
+import { CommandPalette } from "@/components/search/CommandPalette";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -178,6 +179,9 @@ export function DashboardLayout({ children, onNewMeetingClick }: DashboardLayout
           {children}
         </main>
       </div>
+
+      {/* Global Cmd+K Command Palette Search Modal */}
+      <CommandPalette />
     </div>
   );
 }

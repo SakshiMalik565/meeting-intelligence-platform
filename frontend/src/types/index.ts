@@ -76,16 +76,25 @@ export interface PaginatedMeetings {
   total_pages: number;
 }
 
-export interface SearchResult {
+export interface SearchResultItem {
   meeting_id: string;
-  title: string;
-  date: string;
+  meeting_title: string;
   match_type: "title" | "transcript";
-  snippet: string | null;
+  date: string;
+  duration_seconds: number;
+  segment?: {
+    id: string;
+    speaker_name: string;
+    start_time_seconds: number;
+    end_time_seconds: number;
+    text: string;
+  } | null;
+  snippet?: string | null;
 }
 
 export interface GlobalSearchResponse {
-  results: SearchResult[];
-  total: number;
   query: string;
+  title_matches: SearchResultItem[];
+  transcript_matches: SearchResultItem[];
+  total_matches: number;
 }

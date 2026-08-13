@@ -13,10 +13,13 @@ import {
   Trash2,
   Edit2,
   AlertCircle,
+  Download,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { api } from "@/lib/api";
+import { exportTranscriptAsTxt, exportMeetingAsMarkdown } from "@/lib/export";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { MediaPlayer } from "@/components/player/MediaPlayer";
 import { TranscriptPanel } from "@/components/transcript/TranscriptPanel";
@@ -40,6 +43,7 @@ export default function MeetingDetailPage() {
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [editModalOpen, setEditModalOpen] = React.useState(false);
   const [kebabOpen, setKebabOpen] = React.useState(false);
+  const [exportMenuOpen, setExportMenuOpen] = React.useState(false);
 
   // Edit Form State
   const [editTitle, setEditTitle] = React.useState("");
@@ -176,8 +180,8 @@ export default function MeetingDetailPage() {
               </div>
             </div>
 
-            {/* Right: Participants & Kebab Options */}
-            <div className="flex items-center gap-4 shrink-0">
+            {/* Right: Participants, Export & Kebab Options */}
+            <div className="flex items-center gap-3 shrink-0">
               <div className="flex items-center -space-x-2">
                 {meeting.participants?.map((p) => (
                   <Avatar
@@ -188,6 +192,48 @@ export default function MeetingDetailPage() {
                     className="ring-2 ring-brand-bg"
                   />
                 ))}
+              </div>
+
+              {/* Export Dropdown Menu */}
+              <div className="relative">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="flex items-center gap-1.5 text-xs px-2.5"
+                  onClick={() => setExportMenuOpen(!exportMenuOpen)}
+                >
+                  <Download className="w-3.5 h-3.5 text-brand-accent" />
+                  Export
+                </Button>
+
+                {exportMenuOpen ? (
+                  <div className="absolute right-0 mt-1 w-48 rounded-lg border border-brand-border bg-[#161a25] py-1 shadow-lg z-20">
+                    <button
+                      onClick={async () => {
+                        setExportMenuOpen(false);
+                        const transcriptData = await api.getMeetingTranscript(meetingId);
+                        exportTranscriptAsTxt(meeting.title, transcriptData.segments);
+                        toast.success("Transcript exported as .txt");
+                      }}
+                      className="flex items-center gap-2 px-3 py-2 text-xs text-brand-text-primary hover:bg-brand-surface w-full text-left cursor-pointer"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-brand-accent" />
+                      Export Transcript (.txt)
+                    </button>
+                    <button
+                      onClick={async () => {
+                        setExportMenuOpen(false);
+                        const transcriptData = await api.getMeetingTranscript(meetingId);
+                        exportMeetingAsMarkdown(meeting, transcriptData.segments);
+                        toast.success("Meeting report exported as .md");
+                      }}
+                      className="flex items-center gap-2 px-3 py-2 text-xs text-brand-text-primary hover:bg-brand-surface w-full text-left cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5 text-brand-accent" />
+                      Export Full Report (.md)
+                    </button>
+                  </div>
+                ) : null}
               </div>
 
               {/* Kebab Action Dropdown */}
