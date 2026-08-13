@@ -1,13 +1,9 @@
-"""FastAPI application entry point.
-
-Configures CORS, registers all API routers under /api/v1, and provides
-the on-startup hook for database table creation.
-"""
-
+import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.db.base import Base, engine
@@ -23,7 +19,11 @@ from app.models import (  # noqa: F401
     ActionItem,
     Tag,
 )
-from app.routers import meetings, users
+from app.routers import action_items, meetings, search, users
+
+# Set up logging for error tracking
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -53,10 +53,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ── Global Exception Handler ───────────────────────────────────────────
+
+
+@app.exception_handler(Exception)
+def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Log server-side traceback and return a clean, un-leaked 500 JSON response."""
+    logger.error("Unhandled exception occurred: %s", str(exc), exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error. Please check logs for details."},
+    )
+
+
 # ── Routers ────────────────────────────────────────────────────────────
 # All endpoints live under /api/v1 for clean versioning
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(meetings.router, prefix="/api/v1")
+app.include_router(action_items.router, prefix="/api/v1")
+app.include_router(search.router, prefix="/api/v1")
 
 
 @app.get("/", tags=["health"])
