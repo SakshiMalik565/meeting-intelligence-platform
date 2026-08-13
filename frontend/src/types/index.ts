@@ -26,6 +26,11 @@ export interface TranscriptSegment {
   matches?: TranscriptMatch[];
 }
 
+export interface TranscriptSearchResponse {
+  segments: TranscriptSegment[];
+  match_count: number;
+}
+
 export interface Summary {
   id: string;
   overview_text: string;
