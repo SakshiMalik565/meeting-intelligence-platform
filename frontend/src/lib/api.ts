@@ -7,14 +7,26 @@ import {
   GlobalSearchResponse,
 } from "@/types";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1";
+const getApiBaseUrl = (): string => {
+  if (process.env.NEXT_PUBLIC_API_BASE_URL) {
+    return process.env.NEXT_PUBLIC_API_BASE_URL;
+  }
+  // Automatically fallback to live Render backend on production Vercel domains
+  if (
+    typeof window !== "undefined" &&
+    (window.location.hostname.includes("vercel.app") ||
+      window.location.hostname !== "localhost")
+  ) {
+    return "https://meeting-intelligence-platform-7d59.onrender.com/api/v1";
+  }
+  return "http://localhost:8000/api/v1";
+};
 
 async function fetchJson<T>(
   path: string,
   options?: RequestInit
 ): Promise<T> {
-  const url = `${API_BASE_URL}${path}`;
+  const url = `${getApiBaseUrl()}${path}`;
   const response = await fetch(url, {
     ...options,
     headers: {
